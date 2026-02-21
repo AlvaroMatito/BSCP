@@ -34,4 +34,4 @@ Enfocado en técnicas avanzadas de explotación web y metodología práctica uti
 - Manipulación manual de peticiones HTTP
 
 ---
-
+Apuntes personales con fines educativos. Sin contenido de examen, sin material propietario, sin credenciales. Ejemplos basados en conocimiento público y laboratorios.
