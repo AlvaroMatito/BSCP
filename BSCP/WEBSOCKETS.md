@@ -14,7 +14,7 @@ Se previene validando correctamente los mensajes recibidos, implementando contro
 En este laboratorio encontramos un *Live Chat* que parece estar siendo revisado por alguien, observamos que la comunicación es a través de *websocket*.
 Como está siendo revisado por alguien podemos tratar de realizar un **XSS** en el navegador, pero vemos a través del *Websocket History* que al enviar `</>` los escapa,
 para poder llevarlo a cabo podemos interceptar el mensaje con *Burp* y enviarlo desde ahi por si la validación es en cliente.
-`<img src=1 onerror=alert(0)>
+`<img src=1 onerror=alert(0)>`
 ### LAB2: CROSS-SITE WEBSOCKET HIJACKING
 En este laboratorio volvemos a ver un *Live Chat*, si enviamos algunos mensajes y observamos el *Websocket History* vemos que el comando **READY** muestra todos los mensajes del chat y que en la request en la que se realiza el *HandShake* entre cliente y servidor no se usa ningún tipo de *CSRF token*.
 Podemos crear un script malicioso en el *exploit server* que a través de *burp collaborator* nos muestre todo el historial del chat de la víctima.
