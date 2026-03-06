@@ -7,7 +7,7 @@ Se previene **limitando la información que devuelve la aplicación, deshabilit
 #### PASOS:
 - _BUSCAR ERRORES DETALLADOS:_ provocar errores en parámetros (`' " < >`) para ver **versiones, stack traces o rutas del servidor**.
 - *REVISAR TARGET SITE MAP:* puede haber request con información sensible.
-- _ENUMERAR ARCHIVOS SENSIBLES:_ probar rutas comunes como `/robots.txt`, `/backup`, `/config`, `/admin`, `/debug`.
+- _ENUMERAR ARCHIVOS SENSIBLES:_ probar rutas comunes como `/robots.txt`, `/backup`, `/.git`, `/config`, `/admin`, `/debug`.
 - _REVISAR RESPUESTAS HTTP:_ analizar **cabeceras (`Server`, `X-Powered-By`)** usar metodos alternativos como **TRACE**.
 - _INSPECCIONAR COMENTARIOS Y JS:_ revisar **código fuente y archivos JavaScript** por claves API, endpoints ocultos o comentarios de desarrolladores.
 - _REVISAR RESPUESTAS DE LA API:_ algunas APIs devuelven **más información de la necesaria (IDs, emails, tokens, etc.)**.
