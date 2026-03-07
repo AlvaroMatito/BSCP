@@ -1,0 +1,38 @@
+----
+### QUE ES?
+Una **Business Logic Vulnerability** es un fallo en la **lógica de funcionamiento de una aplicación** que permite a un atacante **abusar de cómo está diseñado el flujo del sistema**, incluso aunque no exista un bug técnico como *SQLi* o *XSS*.  
+Ocurre cuando la aplicación **confía demasiado en que el usuario seguirá el flujo previsto** o cuando **no valida correctamente reglas del negocio** (precios, cantidades, pasos del proceso, permisos, etc.).  
+Permite cosas como **comprar productos a precio incorrecto, saltarse pasos de un proceso o realizar acciones que no deberían estar permitidas**.  
+Se previene **validando siempre en el servidor las reglas del negocio y no confiando en el comportamiento del cliente**.
+#### PASOS:
+- _ANALIZAR EL FLUJO DE LA APLICACIÓN:_ identificar pasos como registro, login, compra, cambio de contraseña, etc.
+- _BUSCAR SUPOSICIONES DEL SISTEMA:_ detectar dónde la aplicación **asume que el usuario actuará correctamente**.
+- _MANIPULAR PARÁMETROS:_ modificar valores como `price`, `quantity`, `discount`, `role`, etc.
+- *PROBAR CANTIDADES NEGATIVAS:* añadir productos en cantidades negativas para obtener descuentos.
+- _SALTARSE PASOS DEL FLUJO:_ intentar acceder directamente a endpoints intermedios o finales.
+- *PROBAR COSAS CON CUPONES:* intentar reusar cupones, intercalándolos, usándolos para comprar otros cupones.
+- *BUSCAR LIMITES DE DINERO:* intentar alcanzar el máximo precio posible.
+- _PROBAR ESTADOS INESPERADOS:_ repetir acciones, enviar valores negativos, cantidades enormes o requests fuera de orden.
+### LAB1: EXCESSIVE TRUST IN CLIENT-SIDE CONTROLS
+En este primer laboratorio si seguimos todo el proceso de compra de un producto, nos damos cuenta de que hay una request por `POST /cart` que es la que mete el product al carrito que tiene el parámetro de precio en el body. Esto nos permite modificar el precio del producto a nuestro antojo, pudiendo comprarlo muy barato.
+### LAB2: HIGH-LEVEL LOGIC VULNERABILITY
+En este laboratorio no vemos nada raro en principio, pero si seguimos el flujo de compra de un producto nos encontramos una request `POST /cart` en la cual vemos el parámetro de la cantidad de productos a meter en el carrito. Podemos probar a meter una *cantidad negativa*, de tal manera que al añadir un producto caro se nos hace un "descuento" ya que la cantidad es negativa.
+### LAB3: INCONSISTENT SECURITY CONTROLS 
+En este laboratorio nos piden que accedamos como admins. Para ello podemos buscar el panel de forma manual o usar *Target* → *Site map* → *Engagement tools* → *Discover content*. Observamos que para entrar al apartado de administradores necesitamos una cuenta con `@DontWannaCry.com`. Podemos seguir el flujo de creación de usuario normal y tras crear la cuenta en el apartado de cambio de contraseña intentar cambiar el correo a `@DontWannaCry.com`.
+### LAB4: FLAWED ENFORCEMENT OF BUSINESS RULES
+En este lab vemos que nos dan un cupón de descuento de 5$ con `NEWCUST5` y ademas si bajamos en la pagina por subscribirnos nos dan otro del 30% `SIGNUP30`.
+Podemos probar a intentar reusar los cupones pero no nos deja. Para poder aplicarlos mas de una vez debemos ir *alternándolos* y de esta manera tenemos *cupones infinitos*.
+### LAB5: LOW-LEVEL LOGIC FLAW
+En este laboratorio no vemos nada raro en principio pero si miramos bien todo el flow para comprar productos vemos que solo podemos añadir como máximo 99 productos al carrito. Podemos probar a intentar llevar al intruder esta petición y ver el limite de productos añadidos. Para ello desde el intruder realizamos la request con un *Null Payload*. Vemos que tras agregar muchísimos productos el precio llega al limite y comienza a ser negativo. La idea ahora es añadir la cantidad exacta de prodductos para que el precio suba de nuevo y quede entre 0 y 100 euros.
+### LAB6: INCONSISTENT HANDLING OF EXCEPCIONAL INPUT
+En este laboratorio nos piden que accedamos como admins. Para ello podemos buscar el panel de forma manual o usar *Target* → *Site map* → *Engagement tools* → *Discover content*. Observamos que para entrar al apartado de administradores necesitamos una cuenta con `@DontWannaCry.com`. Vamos al apartado de registro y cremaos una cuenta con nuestro dominio de email pero en el usuario metemos muchos caracteres, observamos que al crear la cuenta el correo se trunca. Podemos intentar registrarnos metiendo un subdominio para que nos llegue el correo y podamos confirmarlo pero que después al tener un máximo de caracteres se trunque justo terminando en `@DontWannaCry.com`.
+### LAB7 WEAK ISOLATION ON DUAL-USE ENDPOINT
+En este laboratorio vemos que podemos cambiar la contraseña de cualquier usuario si conocemos su contraseña actual. Podemos probar a interceptar la request y a eliminar por completo el parámetro `current-password`, vemos que nos permite cambiar la contraseña aun así. Cambiamos la contraseña de *administrator* y listo.
+### LAB8: INSUFICIENT WORKFLOW VALIDATION
+En este laboratorio si seguimos todo el flujo para comprar un producto nos damos cuenta que al comprar el producto la request `/cart/checkout` nos redirige a `/cart/order-confirmatiion?order-confirmation=true`. Podemos probar a añadir el producto al carrito y enviar la request `/cart/order-confirmatiion?order-confirmation=true` para ver que lo compra sin gastar dinero.
+### LAB9: AUTHENTICATION BYPASS VIA FLAWED STATE MACHINE
+En este lab vemos una especie de selector de rol de usuario. Si usamos *Target* → *Site map* → *Engagement tools* → *Discover content* podemos encontrar un apartado de administradores. Podemos tratar de evitar asignar un rol a nuestro usuario de tal manera que se asigne por defecto *administrator*. Para ello interceptamos desde `/login` y dropeamos la request `/role-selector` buscando directamente `/my-account?id=wiener`
+### LAB10: INFINITE MONEY LOGIC FLAW
+En este lab observamos que podemos comprar gifts card y ademas nos dan un descuento que podemos reutilizar. Si automatizamos esto desde el *intruder* con una macro podemos ganar dinero infinito.
+### LAB11: AUTENTICATION BYPASS VIA ENCRYTION ORACLE
+En este lab se descubre que la aplicación usa **cookies cifradas**, pero permite **usar ciertas funciones para cifrar y descifrar datos de forma indirecta**, lo que permite manipularlas. Primero se observa que la cookie **`stay-logged-in`** está cifrada cuando se inicia sesión con _Stay logged in_. Luego se detecta que al enviar un comentario con un **email inválido**, el servidor genera una cookie **`notification`** cifrada que contiene el mensaje de error _“Invalid email address: …”_. Analizando las peticiones con **Burp**, se deduce que el parámetro **email** permite **cifrar datos arbitrarios** (porque el servidor los mete en la cookie) `/post/comment` y que la cookie **notification** permite **descifrarlos** (porque el servidor muestra el resultado en el error) `/post?psotId=`. Usando esto como **oráculo de cifrado/descifrado**, se descifra la cookie `stay-logged-in` y se descubre su formato `username:timestamp`. Después se crea una nueva cookie para `administrator`, ajustando los bytes debido a que el cifrado es **por bloques de 16 bytes**, eliminando el prefijo `"Invalid email address: "` y reconstruyendo el ciphertext. Finalmente se reemplaza la cookie original por la manipulada, lo que permite **iniciar sesión como administrador**, acceder a **/admin** y borrar al usuario `carlos`, resolviendo el laboratorio.
